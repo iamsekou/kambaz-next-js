@@ -2,6 +2,10 @@ export default function lab1() {
   return (
     <div id="wd-lab1">
       <h2>Lab 1</h2>
+      <h2>Sekou Samassi</h2>
+      <h2>Web Dev CS4550.33211.202630</h2>
+      <h2>https://kambaz-next-js-coral.vercel.app/account/signin</h2>
+      <h2>https://github.com/iamsekou/kambaz-next-js</h2>
       <h3>HTML Examples</h3>
       <div id="wd-h-tag">
         <h4>Heading Tags</h4>
