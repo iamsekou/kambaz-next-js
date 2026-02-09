@@ -1,19 +1,18 @@
+// app/(kambaz)/courses/[cid]/layout.tsx
 import { ReactNode } from "react";
 import CourseNavigation from "./navigation";
-export default async function CoursesLayout(
-  { children, params }: Readonly<{ children: ReactNode; params: Promise<{ cid: string }> }>) {
- const { cid } = await params;
- return (
-   <div id="wd-courses">
-     <h2>Courses {cid}</h2>
-     <hr />
-     <table>
-       <tbody>
-         <tr>
-           <td valign="top" width="200"> <CourseNavigation /> </td>
-           <td valign="top" width="100%"> {children} </td>
-         </tr>
-       </tbody>
-     </table>
-   </div>
-);}
+
+export default function CoursesLayout({
+  children,
+}: Readonly<{ children: ReactNode }>) {
+  return (
+    <div id="wd-courses">
+      <div className="d-flex">
+        <div className="d-none d-md-block" style={{ width: 220 }}>
+          <CourseNavigation />
+        </div>
+        <div className="flex-fill ms-4">{children}</div>
+      </div>
+    </div>
+  );
+}
