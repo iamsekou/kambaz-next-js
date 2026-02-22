@@ -1,11 +1,18 @@
-// app/(kambaz)/courses/[cid]/assignments/page.tsx
-import { FaSearch, FaPlus } from "react-icons/fa";
+"use client";
+
+import { useParams } from "next/navigation";
+import * as db from "../../../database";
+
+import { FaSearch, FaPlus, FaRegFileAlt, FaCheckCircle } from "react-icons/fa";
 import { BsGripVertical } from "react-icons/bs";
-import { FaRegFileAlt } from "react-icons/fa";
-import { FaCheckCircle } from "react-icons/fa";
 import Link from "next/link";
 
 export default function Assignments() {
+  const { cid } = useParams<{ cid: string }>();
+
+  const assignments = db.assignments;
+  const courseAssignments = assignments.filter((a: any) => a.course === cid);
+
   return (
     <div id="wd-assignments">
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -45,52 +52,38 @@ export default function Assignments() {
           </div>
         </div>
 
-        {[
-          {
-            title: "A1",
-            note: "Multiple Modules",
-            available: "Not available until May 6 at 12:00am",
-            due: "Due May 13 at 11:59pm",
-          },
-          {
-            title: "A2",
-            note: "Multiple Modules",
-            available: "Not available until May 13 at 12:00am",
-            due: "Due May 20 at 11:59pm",
-          },
-          {
-            title: "A3",
-            note: "Multiple Modules",
-            available: "Not available until May 20 at 12:00am",
-            due: "Due May 27 at 11:59pm",
-          },
-        ].map((a) => (
+        {courseAssignments.map((a: any) => (
           <div
-            key={a.title}
+            key={a._id}
             className="d-flex align-items-center border-top px-3 py-3"
           >
             <div className="me-3 text-muted">
               <BsGripVertical />
             </div>
 
-            <div className="me-3 text-danger">
+            <div className="me-3 text-success">
+              {/* green-ish icon feel like screenshot; swap if needed */}
               <FaRegFileAlt />
             </div>
 
             <div className="flex-fill">
               <div className="fw-bold">
-                <Link href={`/courses/1234/assignments/${a.title}/edit`} className="text-decoration-none text-dark">
+                <Link
+                  href={`/courses/${cid}/assignments/${a._id}/edit`}
+                  className="text-decoration-none text-dark"
+                >
                   {a.title}
                 </Link>
               </div>
+
               <div className="small text-muted">
-                <span className="text-danger">{a.note}</span>
+                <span className="text-danger">{a.description}</span>
                 {" | "}
                 {a.available}
                 {" | "}
                 {a.due}
                 {" | "}
-                100 pts
+                {a.points} pts
               </div>
             </div>
 

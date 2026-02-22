@@ -1,67 +1,52 @@
 // app/(kambaz)/courses/[cid]/navigation.tsx
+"use client";
+
 import Link from "next/link";
+import { usePathname, useParams } from "next/navigation";
 
 export default function CourseNavigation() {
+  const pathname = usePathname();
+  const { cid } = useParams<{ cid: string }>();
+
+  const links = [
+    "Home",
+    "Modules",
+    "Piazza",
+    "Zoom",
+    "Assignments",
+    "Quizzes",
+    "Grades",
+    "People",
+  ];
+
   return (
-    <div
-      id="wd-courses-navigation"
-      className="wd list-group fs-5 rounded-0"
-    >
-      <Link
-        href="/courses/1234/home"
-        id="wd-course-home-link"
-        className="list-group-item active border-0"
-      >
-        Home
-      </Link>
+    <div id="wd-courses-navigation" className="wd list-group fs-5 rounded-0">
+      {links.map((label) => {
+        // Build hrefs 
+        const href =
+          label === "People"
+            ? `/courses/${cid}/people/table`
+            : `/courses/${cid}/${label.toLowerCase()}`;
 
-      <Link
-        href="/courses/1234/modules"
-        id="wd-course-modules-link"
-        className="list-group-item text-danger border-0"
-      >
-        Modules
-      </Link>
+        // Highlight logic
+        const active =
+          label === "People"
+            ? pathname.includes(`/courses/${cid}/people`)
+            : pathname === `/courses/${cid}/${label.toLowerCase()}`;
 
-      <Link
-        href="/courses/1234/piazza"
-        id="wd-course-piazza-link"
-        className="list-group-item text-danger border-0"
-      >
-        Piazza
-      </Link>
-
-      <Link
-        href="/courses/1234/zoom"
-        id="wd-course-zoom-link"
-        className="list-group-item text-danger border-0"
-      >
-        Zoom
-      </Link>
-
-      <Link
-        href="/courses/1234/assignments"
-        id="wd-course-assignments-link"
-        className="list-group-item text-danger border-0"
-      >
-        Assignments
-      </Link>
-
-      <Link
-        href="/courses/1234/quizzes"
-        id="wd-course-quizzes-link"
-        className="list-group-item text-danger border-0"
-      >
-        Quizzes
-      </Link>
-
-      <Link
-        href="/courses/1234/people/table"
-        id="wd-course-people-link"
-        className="list-group-item text-danger border-0"
-      >
-        People
-      </Link>
+        return (
+          <Link
+            key={label}
+            href={href}
+            id={`wd-course-${label.toLowerCase()}-link`}
+            className={`list-group-item border-0 ${
+              active ? "active" : "text-danger"
+            }`}
+          >
+            {label}
+          </Link>
+        );
+      })}
     </div>
   );
 }

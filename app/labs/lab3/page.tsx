@@ -26,11 +26,19 @@ import Classes from "./classes";
 import Styles from "./styles";
 import ClientComponentDemo from "./clientcomponentdemo";
 import ServerComponentDemo from "./servercomponents";
+import Add from "./add";
+import Square from "./square";
+import Highlight from "./highlight";  
+import AddPathParameters from "./add/[a]/[b]/page";
+import PathParameters from "./pathparameters";
+import TodoItem from "./todos/todoitem";
+import TodoList from "./todos/todolist";
 
 
 
 
 export default function Lab3() {
+  console.log('Hello World!');
   return (
     <div>
       <h2>Lab 3</h2>
@@ -62,5 +70,17 @@ export default function Lab3() {
       <Styles />
       <ClientComponentDemo />
       <ServerComponentDemo />
+      <Add a={3} b={4} />
+      <h4>Square of 4</h4>
+      <Square>4</Square>
+      <hr />
+      <Highlight>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipitratione eaque illo minus cum, saepe totam
+        vel nihil repellat nemo explicabo excepturi consectetur. Modi omnis minus sequi maiores, provident voluptates.
+     </Highlight>
+      <AddPathParameters />
+      <PathParameters />
+      <TodoList />
+      <TodoItem />
     </div>
 );}
