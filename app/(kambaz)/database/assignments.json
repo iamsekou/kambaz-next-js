@@ -1,0 +1,39 @@
+[
+  {
+    "_id": "A101",
+    "title": "A1",
+    "description": "Multiple Modules",
+    "course": "RS101",
+    "available": "Not available until May 6 at 12:00am",
+    "due": "Due May 13 at 11:59pm",
+    "points": 100
+  },
+  {
+    "_id": "A102",
+    "title": "A2",
+    "description": "Multiple Modules",
+    "course": "RS101",
+    "available": "Not available until May 13 at 12:00am",
+    "due": "Due May 20 at 11:59pm",
+    "points": 100
+  },
+  {
+    "_id": "A103",
+    "title": "A3",
+    "description": "Multiple Modules",
+    "course": "RS101",
+    "available": "Not available until May 20 at 12:00am",
+    "due": "Due May 27 at 11:59pm",
+    "points": 100
+  },
+
+  {
+    "_id": "A201",
+    "title": "Aerodynamics Quiz",
+    "description": "Multiple Modules",
+    "course": "RS102",
+    "available": "Not available yet",
+    "due": "Due TBD",
+    "points": 100
+  }
+]
