@@ -13,7 +13,7 @@ import ObjectStateVariable from "./objectstatevariable";
 import ArrayStateVariable from "./arraystatevariable";
 import ParentStateComponent from "./parentstatecomponent";
 import UrlEncoding from "./query-parameters";
-import QueryCalculator from "./url-encoding/query-params/page";
+import QueryCalculator from "./url-encoding/query-params/querycalculator";
 import store from "./store";
 import { Provider } from "react-redux";
 import { Suspense } from "react";
