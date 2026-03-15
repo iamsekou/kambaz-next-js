@@ -21,31 +21,25 @@ export default function QueryCalculator() {
     <div id="wd-query-calculator">
       <h3>Query Parameter Calculator</h3>
 
-      <div className="mb-2">
-        <label>A:</label>
-        <input
-          className="form-control"
-          type="number"
-          value={valueA}
-          onChange={(e) => setValueA(Number(e.target.value))}
-        />
-      </div>
+      <input
+        className="form-control mb-2"
+        type="number"
+        value={valueA}
+        onChange={(e) => setValueA(Number(e.target.value))}
+      />
 
-      <div className="mb-2">
-        <label>B:</label>
-        <input
-          className="form-control"
-          type="number"
-          value={valueB}
-          onChange={(e) => setValueB(Number(e.target.value))}
-        />
-      </div>
+      <input
+        className="form-control mb-2"
+        type="number"
+        value={valueB}
+        onChange={(e) => setValueB(Number(e.target.value))}
+      />
 
-      <button className="btn btn-primary mb-3" onClick={calculate}>
+      <button className="btn btn-primary mb-2" onClick={calculate}>
         Calculate
       </button>
 
-      <h4>Result: {a + b}</h4>
+      <div>Result: {a + b}</div>
     </div>
   );
 }
