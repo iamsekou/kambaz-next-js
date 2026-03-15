@@ -16,6 +16,7 @@ import UrlEncoding from "./query-parameters";
 import QueryCalculator from "./url-encoding/query-params/page";
 import store from "./store";
 import { Provider } from "react-redux";
+import { Suspense } from "react";
 
 export default function Lab4() {
   function sayHello() {
@@ -39,7 +40,9 @@ export default function Lab4() {
           <ArrayStateVariable />
           <ParentStateComponent />
           <UrlEncoding />
-          <QueryCalculator />
+          <Suspense fallback={<div>Loading...</div>}>
+  <QueryCalculator />
+</Suspense>
           
           <h3>React Examples</h3>
           <Link href="./redux">Redux Examples</Link>
