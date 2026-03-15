@@ -1,24 +1,32 @@
-// app/(kambaz)/courses/[cid]/modules/page.tsx
 "use client";
 
 import { useParams } from "next/navigation";
-import * as db from "../../../database";
-import { ListGroup, ListGroupItem } from "react-bootstrap";
+import { ListGroup, ListGroupItem, FormControl } from "react-bootstrap";
 import { BsGripVertical } from "react-icons/bs";
 import ModulesControls from "./modulescontrols";
 import ModuleControlButtons from "./modulecontrolbuttons";
 import LessonControlButtons from "./lessoncontrolbuttons";
+import { useState } from "react";
+import { addModule, editModule, updateModule, deleteModule } from "./reducer";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../../store";
 
 export default function Modules() {
-  const { cid } = useParams<{ cid: string }>();
-  const modules = db.modules;
+  const { cid } = useParams();
+  const [moduleName, setModuleName] = useState("");
+  const { modules } = useSelector((state: RootState) => state.modulesReducer);
+  const dispatch = useDispatch();
 
   return (
-    <div>
-      <ModulesControls />
-      <br />
-      <br />
-      <br />
+    <div className="wd-modules">
+      <ModulesControls
+        moduleName={moduleName}
+        setModuleName={setModuleName}
+        addModule={() => {
+          dispatch(addModule({ name: moduleName, course: cid }));
+          setModuleName("");
+        }}
+      />
 
       <ListGroup id="wd-modules" className="rounded-0">
         {modules
@@ -30,8 +38,37 @@ export default function Modules() {
             >
               <div className="wd-title p-3 ps-2 bg-secondary">
                 <BsGripVertical className="me-2 fs-3" />
-                {module.name}
-                <ModuleControlButtons />
+
+                {!module.editing && module.name}
+
+                {module.editing && (
+                  <FormControl
+                    className="w-50 d-inline-block"
+                    onChange={(e) =>
+                      dispatch(
+                        updateModule({ ...module, name: e.target.value })
+                      )
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        dispatch(
+                          updateModule({ ...module, editing: false })
+                        );
+                      }
+                    }}
+                    defaultValue={module.name}
+                  />
+                )}
+
+                <ModuleControlButtons
+                  moduleId={module._id}
+                  deleteModule={(moduleId) =>
+                    dispatch(deleteModule(moduleId))
+                  }
+                  editModule={(moduleId) =>
+                    dispatch(editModule(moduleId))
+                  }
+                />
               </div>
 
               {module.lessons && (

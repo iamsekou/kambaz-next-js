@@ -1,13 +1,33 @@
-import { FaCheckCircle, FaEllipsisV } from "react-icons/fa";
-import { Button } from "react-bootstrap";
+import { FaTrash } from "react-icons/fa";
+import { FaPencil } from "react-icons/fa6";
+import { BsPlus } from "react-icons/bs";
+import { IoEllipsisVertical } from "react-icons/io5";
+import GreenCheckmark from "./greencheckmark";
 
-export default function ModuleControlButtons() {
+export default function ModuleControlButtons({
+  moduleId,
+  deleteModule,
+  editModule,
+}: {
+  moduleId: string;
+  deleteModule: (moduleId: string) => void;
+  editModule: (moduleId: string) => void;
+}) {
   return (
-    <span className="float-end">
-      <FaCheckCircle className="text-success me-2 fs-5" />
-      <Button variant="secondary" size="sm" className="me-1">
-        <FaEllipsisV />
-      </Button>
-    </span>
+    <div className="float-end">
+      <FaPencil
+        onClick={() => editModule(moduleId)}
+        className="text-primary me-3"
+      />
+
+      <FaTrash
+        onClick={() => deleteModule(moduleId)}
+        className="text-danger me-2"
+      />
+
+      <GreenCheckmark />
+      <BsPlus className="fs-5" />
+      <IoEllipsisVertical className="fs-4" />
+    </div>
   );
 }

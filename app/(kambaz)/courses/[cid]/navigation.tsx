@@ -1,4 +1,3 @@
-// app/(kambaz)/courses/[cid]/navigation.tsx
 "use client";
 
 import Link from "next/link";
@@ -22,13 +21,11 @@ export default function CourseNavigation() {
   return (
     <div id="wd-courses-navigation" className="wd list-group fs-5 rounded-0">
       {links.map((label) => {
-        // Build hrefs 
         const href =
           label === "People"
             ? `/courses/${cid}/people/table`
             : `/courses/${cid}/${label.toLowerCase()}`;
 
-        // Highlight logic
         const active =
           label === "People"
             ? pathname.includes(`/courses/${cid}/people`)
