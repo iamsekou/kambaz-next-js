@@ -17,6 +17,11 @@ export default function ModulesControls({
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const onAdd = async () => {
+    await addModule();
+    handleClose();
+  };
+
   return (
     <div id="wd-modules-controls" className="text-nowrap">
       <Button variant="danger" onClick={handleShow}>
@@ -30,7 +35,7 @@ export default function ModulesControls({
         dialogTitle="Add Module"
         moduleName={moduleName}
         setModuleName={setModuleName}
-        addModule={addModule}
+        addModule={onAdd}
       />
     </div>
   );

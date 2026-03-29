@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Row,
@@ -13,20 +14,21 @@ import {
   FormControl,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { addNewCourse, deleteCourse, updateCourse } from "../courses/reducer";
-import { enroll, unenroll } from "../enrollments/reducer";
+import { setCourses } from "../courses/reducer";
+import { setEnrollments } from "../enrollments/reducer";
 import { RootState } from "../store";
+import * as client from "../courses/client";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
 
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
-  const { currentUser } = useSelector(
-    (state: RootState) => state.accountReducer
-  ) as { currentUser: any };
   const { enrollments } = useSelector(
     (state: RootState) => state.enrollmentsReducer
   );
+  const { currentUser } = useSelector(
+    (state: RootState) => state.accountReducer
+  ) as { currentUser: any };
 
   const [showAllCourses, setShowAllCourses] = useState(false);
 
@@ -40,15 +42,60 @@ export default function Dashboard() {
     description: "New Description",
   });
 
-  const visibleCourses = courses.filter((course: any) =>
-    showAllCourses
-      ? true
-      : enrollments.some(
-          (enrollment: any) =>
-            enrollment.user === currentUser?._id &&
-            enrollment.course === course._id
-        )
-  );
+  const fetchCourses = async () => {
+    try {
+      if (!currentUser) return;
+
+      if (showAllCourses) {
+        const allCourses = await client.fetchAllCourses();
+        dispatch(setCourses(allCourses));
+      } else {
+        const myCourses = await client.findMyCourses();
+        dispatch(setCourses(myCourses));
+      }
+
+      const myEnrollments = await client.findMyEnrollments();
+      dispatch(setEnrollments(myEnrollments));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onAddNewCourse = async () => {
+    const newCourse = await client.createCourse(course);
+    dispatch(setCourses([...courses, newCourse]));
+  };
+
+  const onDeleteCourse = async (courseId: string) => {
+    await client.deleteCourse(courseId);
+    dispatch(setCourses(courses.filter((course: any) => course._id !== courseId)));
+  };
+
+  const onUpdateCourse = async () => {
+    await client.updateCourse(course);
+    dispatch(
+      setCourses(
+        courses.map((c: any) => {
+          if (c._id === course._id) return course;
+          return c;
+        })
+      )
+    );
+  };
+
+  const onEnroll = async (courseId: string) => {
+    await client.enrollInCourse(courseId);
+    fetchCourses();
+  };
+
+  const onUnenroll = async (courseId: string) => {
+    await client.unenrollFromCourse(courseId);
+    fetchCourses();
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, [currentUser, showAllCourses]);
 
   return (
     <div id="wd-dashboard">
@@ -63,7 +110,7 @@ export default function Dashboard() {
             <button
               className="btn btn-primary float-end"
               id="wd-add-new-course-click"
-              onClick={() => dispatch(addNewCourse(course))}
+              onClick={onAddNewCourse}
             >
               Add
             </button>
@@ -71,7 +118,7 @@ export default function Dashboard() {
             <button
               className="btn btn-warning float-end me-2"
               id="wd-update-course-click"
-              onClick={() => dispatch(updateCourse(course))}
+              onClick={onUpdateCourse}
             >
               Update
             </button>
@@ -113,14 +160,12 @@ export default function Dashboard() {
         </Button>
       )}
 
-      <h2 id="wd-dashboard-published">
-        Published Courses ({visibleCourses.length})
-      </h2>
+      <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2>
       <hr />
 
       <div id="wd-dashboard-courses">
         <Row xs={1} md={5} className="g-4">
-          {visibleCourses.map((course: any) => {
+          {courses.map((course: any) => {
             const isEnrolled = enrollments.some(
               (enrollment: any) =>
                 enrollment.user === currentUser?._id &&
@@ -167,7 +212,7 @@ export default function Dashboard() {
                             id="wd-delete-course-click"
                             onClick={(event) => {
                               event.preventDefault();
-                              dispatch(deleteCourse(course._id));
+                              onDeleteCourse(course._id);
                             }}
                           >
                             Delete
@@ -194,12 +239,7 @@ export default function Dashboard() {
                             className="float-end me-2"
                             onClick={(event) => {
                               event.preventDefault();
-                              dispatch(
-                                unenroll({
-                                  user: currentUser._id,
-                                  course: course._id,
-                                })
-                              );
+                              onUnenroll(course._id);
                             }}
                           >
                             Unenroll
@@ -210,12 +250,7 @@ export default function Dashboard() {
                             className="float-end me-2"
                             onClick={(event) => {
                               event.preventDefault();
-                              dispatch(
-                                enroll({
-                                  user: currentUser._id,
-                                  course: course._id,
-                                })
-                              );
+                              onEnroll(course._id);
                             }}
                           >
                             Enroll

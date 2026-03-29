@@ -8,11 +8,15 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store";
 
 export default function AccountNavigation() {
-  const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+  const { currentUser } = useSelector(
+    (state: RootState) => state.accountReducer
+  );
   const pathname = usePathname();
 
   const linkClass = (href: string) =>
-    `list-group-item border-0 ${pathname === href ? "active" : "text-danger"}`;
+    `d-block text-decoration-none ${
+      pathname === href ? "text-white" : "text-danger"
+    }`;
 
   return (
     <div className="text-center">
@@ -26,7 +30,9 @@ export default function AccountNavigation() {
       <ListGroup className="rounded-0 fs-4 text-start">
         {!currentUser && (
           <>
-            <ListGroupItem>
+            <ListGroupItem
+              className={pathname === "/account/signin" ? "active" : ""}
+            >
               <Link
                 id="wd-signin-link"
                 href="/account/signin"
@@ -36,7 +42,9 @@ export default function AccountNavigation() {
               </Link>
             </ListGroupItem>
 
-            <ListGroupItem>
+            <ListGroupItem
+              className={pathname === "/account/signup" ? "active" : ""}
+            >
               <Link
                 id="wd-signup-link"
                 href="/account/signup"
@@ -49,7 +57,9 @@ export default function AccountNavigation() {
         )}
 
         {currentUser && (
-          <ListGroupItem>
+          <ListGroupItem
+            className={pathname === "/account/profile" ? "active" : ""}
+          >
             <Link
               id="wd-profile-link"
               href="/account/profile"

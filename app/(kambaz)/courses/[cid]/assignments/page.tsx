@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Button, FormControl, ListGroup } from "react-bootstrap";
 import { FaPlus, FaTrash } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
-import { deleteAssignment } from "./reducer";
+import { deleteAssignment, setAssignments } from "./reducer";
+import * as client from "../../client";
 
 export default function Assignments() {
   const { cid } = useParams();
@@ -19,15 +21,22 @@ export default function Assignments() {
     (state: RootState) => state.accountReducer
   ) as { currentUser: any };
 
-  const courseAssignments = assignments.filter(
-    (assignment: any) => assignment.course === cid
-  );
+  const fetchAssignments = async () => {
+    const assignments = await client.findAssignmentsForCourse(cid as string);
+    dispatch(setAssignments(assignments));
+  };
 
-  const removeAssignment = (assignmentId: string) => {
+  useEffect(() => {
+    fetchAssignments();
+  }, [cid]);
+
+  const removeAssignment = async (assignmentId: string) => {
     const confirmed = window.confirm(
       "Are you sure you want to remove this assignment?"
     );
     if (!confirmed) return;
+
+    await client.deleteAssignment(assignmentId);
     dispatch(deleteAssignment(assignmentId));
   };
 
@@ -50,7 +59,7 @@ export default function Assignments() {
       </div>
 
       <ListGroup>
-        {courseAssignments.map((assignment: any) => (
+        {assignments.map((assignment: any) => (
           <ListGroup.Item
             key={assignment._id}
             className="d-flex justify-content-between align-items-start"
