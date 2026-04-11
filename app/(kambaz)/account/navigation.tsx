@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ListGroup, ListGroupItem } from "react-bootstrap";
+import { ListGroup, ListGroupItem, NavLink } from "react-bootstrap";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
@@ -67,6 +67,25 @@ export default function AccountNavigation() {
             >
               Profile
             </Link>
+          </ListGroupItem>
+        )}
+
+        {currentUser && currentUser.role === "ADMIN" && (
+          <ListGroupItem
+            className={
+              pathname.endsWith("Users") || pathname === "/account/users"
+                ? "active"
+                : ""
+            }
+          >
+            <NavLink
+              as={Link}
+              href="/account/users"
+              active={pathname.endsWith("Users")}
+              className="text-danger"
+            >
+              Users
+            </NavLink>
           </ListGroupItem>
         )}
       </ListGroup>
