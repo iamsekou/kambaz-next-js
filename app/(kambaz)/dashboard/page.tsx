@@ -45,25 +45,33 @@ export default function Dashboard() {
   const fetchCourses = async () => {
     if (!currentUser) return;
 
+    let loadedCourses: any[] = [];
+
     // Load course list — keep this independent so enrollment errors can't hide courses
     try {
       if (showAllCourses) {
-        const allCourses = await client.fetchAllCourses();
-        dispatch(setCourses(allCourses));
+        loadedCourses = await client.fetchAllCourses();
       } else {
-        const myCourses = await client.findMyCourses();
-        dispatch(setCourses(myCourses));
+        // "My Courses" returns only enrolled courses — every course here IS enrolled
+        loadedCourses = await client.findMyCourses();
       }
+      dispatch(setCourses(loadedCourses));
     } catch (error) {
       console.error("Failed to load courses:", error);
     }
 
-    // Load enrollments separately so a 401 here doesn't blank the course list
+    // Load enrollments separately so a 401 here doesn't blank the course list.
+    // Fallback: if the session is broken and we're in "My Courses" mode, treat
+    // every returned course as enrolled (they wouldn't appear otherwise).
     try {
       const myEnrollments = await client.findMyEnrollments();
       dispatch(setEnrollments(myEnrollments));
     } catch (error) {
       console.error("Failed to load enrollments:", error);
+      if (!showAllCourses && loadedCourses.length > 0) {
+        // findMyCourses already filters to enrolled — use that as the fallback
+        dispatch(setEnrollments(loadedCourses));
+      }
     }
   };
 
