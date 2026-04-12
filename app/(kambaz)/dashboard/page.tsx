@@ -43,9 +43,10 @@ export default function Dashboard() {
   });
 
   const fetchCourses = async () => {
-    try {
-      if (!currentUser) return;
+    if (!currentUser) return;
 
+    // Load course list — keep this independent so enrollment errors can't hide courses
+    try {
       if (showAllCourses) {
         const allCourses = await client.fetchAllCourses();
         dispatch(setCourses(allCourses));
@@ -53,11 +54,16 @@ export default function Dashboard() {
         const myCourses = await client.findMyCourses();
         dispatch(setCourses(myCourses));
       }
+    } catch (error) {
+      console.error("Failed to load courses:", error);
+    }
 
+    // Load enrollments separately so a 401 here doesn't blank the course list
+    try {
       const myEnrollments = await client.findMyEnrollments();
       dispatch(setEnrollments(myEnrollments));
     } catch (error) {
-      console.error(error);
+      console.error("Failed to load enrollments:", error);
     }
   };
 
@@ -127,7 +133,7 @@ export default function Dashboard() {
               className="btn btn-primary float-end me-2"
               onClick={() => setShowAllCourses(!showAllCourses)}
             >
-              Enrollments
+              {showAllCourses ? "My Courses" : "All Courses"}
             </button>
           </h5>
 
@@ -156,7 +162,7 @@ export default function Dashboard() {
           variant="primary"
           onClick={() => setShowAllCourses(!showAllCourses)}
         >
-          Enrollments
+          {showAllCourses ? "My Courses" : "All Courses"}
         </Button>
       )}
 
@@ -167,10 +173,8 @@ export default function Dashboard() {
         <Row xs={1} md={5} className="g-4">
           {courses.map((course: any) => {
             const isEnrolled = enrollments.some(
-              (enrollment: any) =>
-                enrollment.user === currentUser?._id &&
-                enrollment.course === course._id
-            );
+  (enrolledCourse: any) => enrolledCourse._id === course._id
+);
 
             return (
               <Col
