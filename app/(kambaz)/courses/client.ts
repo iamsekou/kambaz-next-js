@@ -3,6 +3,39 @@ import api from "../api";
 const COURSES_API = `/api/courses`;
 const USERS_API = `/api/users`;
 const ASSIGNMENTS_API = `/api/assignments`;
+const QUIZZES_API = `/api/quizzes`;
+const ATTEMPTS_API = `/api/attempts`;
+
+const toArray = <T>(value: unknown): T[] => {
+  if (Array.isArray(value)) return value as T[];
+  if (value && typeof value === "object") {
+    const withItems = value as {
+      items?: T[];
+      quizzes?: T[];
+      attempts?: T[];
+      data?: T[];
+    };
+    return (
+      withItems.items || withItems.quizzes || withItems.attempts || withItems.data || []
+    );
+  }
+  return [];
+};
+
+const tryRequests = async <T>(
+  requests: Array<() => Promise<{ data: T }>>
+): Promise<T> => {
+  let lastError: unknown;
+  for (const request of requests) {
+    try {
+      const { data } = await request();
+      return data;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError;
+};
 
 export const fetchAllCourses = async () => {
   const { data } = await api.get(COURSES_API);
@@ -65,6 +98,83 @@ export const updateModule = async (courseId: string, module: any) => {
 export const findAssignmentsForCourse = async (courseId: string) => {
   const response = await api.get(`${COURSES_API}/${courseId}/assignments`);
   return response.data;
+};
+
+export const findQuizzesForCourse = async (courseId: string) => {
+  const data = await tryRequests<any>([
+    () => api.get(`${COURSES_API}/${courseId}/quizzes`),
+    () => api.get(`${QUIZZES_API}?course=${courseId}`),
+  ]);
+  return toArray<any>(data);
+};
+
+export const findQuizById = async (quizId: string) => {
+  const data = await tryRequests<any>([
+    () => api.get(`${QUIZZES_API}/${quizId}`),
+    () => api.get(`${QUIZZES_API}?id=${quizId}`),
+  ]);
+
+  if (Array.isArray(data)) return data[0] || null;
+  if (data && typeof data === "object" && "quiz" in data) {
+    return (data as { quiz: any }).quiz;
+  }
+  return data;
+};
+
+export const findMyAttemptsForQuiz = async (quizId: string) => {
+  const data = await tryRequests<any>([
+    () => api.get(`${QUIZZES_API}/${quizId}/attempts/current`),
+    () => api.get(`${QUIZZES_API}/${quizId}/attempts?mine=true`),
+    () => api.get(`${USERS_API}/current/quizzes/${quizId}/attempts`),
+  ]);
+  return toArray<any>(data);
+};
+
+export const findMyAttemptsForCourse = async (courseId: string) => {
+  const data = await tryRequests<any>([
+    () => api.get(`${COURSES_API}/${courseId}/quizzes/attempts/current`),
+    () => api.get(`${USERS_API}/current/quizzes/attempts?course=${courseId}`),
+  ]);
+  return toArray<any>(data);
+};
+
+export const findAttemptById = async (attemptId: string) => {
+  const data = await tryRequests<any>([
+    () => api.get(`${ATTEMPTS_API}/${attemptId}`),
+    () => api.get(`${QUIZZES_API}/attempts/${attemptId}`),
+  ]);
+  if (data && typeof data === "object" && "attempt" in data) {
+    return (data as { attempt: any }).attempt;
+  }
+  return data;
+};
+
+export const startQuizAttempt = async (quizId: string) => {
+  const data = await tryRequests<any>([
+    () => api.post(`${QUIZZES_API}/${quizId}/attempts`, {}),
+    () => api.post(`${QUIZZES_API}/${quizId}/attempts/start`, {}),
+  ]);
+  if (data && typeof data === "object" && "attempt" in data) {
+    return (data as { attempt: any }).attempt;
+  }
+  return data;
+};
+
+export const submitQuizAttempt = async (
+  quizId: string,
+  attemptId: string,
+  payload: { answers: Record<string, string>; score: number; pointsEarned: number }
+) => {
+  const data = await tryRequests<any>([
+    () =>
+      api.put(`${QUIZZES_API}/${quizId}/attempts/${attemptId}/submit`, payload),
+    () => api.put(`${ATTEMPTS_API}/${attemptId}/submit`, payload),
+    () => api.post(`${QUIZZES_API}/${quizId}/submissions`, { ...payload, attemptId }),
+  ]);
+  if (data && typeof data === "object" && "attempt" in data) {
+    return (data as { attempt: any }).attempt;
+  }
+  return data;
 };
 
 export const findAssignmentById = async (assignmentId: string) => {
