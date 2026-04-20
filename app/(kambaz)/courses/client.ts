@@ -3,6 +3,8 @@ import api from "../api";
 const COURSES_API = `/api/courses`;
 const USERS_API = `/api/users`;
 const ASSIGNMENTS_API = `/api/assignments`;
+const QUIZZES_API = `/api/quizzes`;
+const QUESTIONS_API = `/api/questions`;
 
 export const fetchAllCourses = async () => {
   const { data } = await api.get(COURSES_API);
@@ -65,6 +67,81 @@ export const updateModule = async (courseId: string, module: any) => {
 export const findAssignmentsForCourse = async (courseId: string) => {
   const response = await api.get(`${COURSES_API}/${courseId}/assignments`);
   return response.data;
+};
+
+export const findQuizzesForCourse = async (courseId: string) => {
+  const { data } = await api.get(`${COURSES_API}/${courseId}/quizzes`);
+  return data;
+};
+
+export const findQuizById = async (quizId: string) => {
+  const { data } = await api.get(`${QUIZZES_API}/${quizId}`);
+  return data;
+};
+
+export const createQuizForCourse = async (courseId: string, quiz: any) => {
+  const { data } = await api.post(`${COURSES_API}/${courseId}/quizzes`, quiz);
+  return data;
+};
+
+export const updateQuiz = async (quizId: string, updates: any) => {
+  const { data } = await api.put(`${QUIZZES_API}/${quizId}`, updates);
+  return data;
+};
+
+export const deleteQuiz = async (quizId: string) => {
+  const { data } = await api.delete(`${QUIZZES_API}/${quizId}`);
+  return data;
+};
+
+export const publishQuiz = async (quizId: string, published: boolean) => {
+  const { data } = await api.put(`${QUIZZES_API}/${quizId}/publish`, {
+    published,
+  });
+  return data;
+};
+
+export const findQuestionsForQuiz = async (quizId: string) => {
+  const { data } = await api.get(`${QUIZZES_API}/${quizId}/questions`);
+  return data;
+};
+
+export const createQuestionForQuiz = async (quizId: string, question: any) => {
+  const { data } = await api.post(
+    `${QUIZZES_API}/${quizId}/questions`,
+    question
+  );
+  return data;
+};
+
+export const updateQuestion = async (questionId: string, updates: any) => {
+  const { data } = await api.put(`${QUESTIONS_API}/${questionId}`, updates);
+  return data;
+};
+
+export const deleteQuestion = async (questionId: string) => {
+  const { data } = await api.delete(`${QUESTIONS_API}/${questionId}`);
+  return data;
+};
+
+export const findAttemptsForQuiz = async (quizId: string) => {
+  const { data } = await api.get(`${QUIZZES_API}/${quizId}/attempts`);
+  return data;
+};
+
+export const findLastAttempt = async (quizId: string) => {
+  const { data } = await api.get(`${QUIZZES_API}/${quizId}/attempts/last`);
+  return data;
+};
+
+export const submitQuizAttempt = async (
+  quizId: string,
+  answers: Array<{ questionId: string; answer: string }>
+) => {
+  const { data } = await api.post(`${QUIZZES_API}/${quizId}/attempts`, {
+    answers,
+  });
+  return data;
 };
 
 export const findAssignmentById = async (assignmentId: string) => {
